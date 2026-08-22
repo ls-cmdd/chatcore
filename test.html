@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>اختبار Chat WebSocket</title>
+<style>
+  body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }
+  #log { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; background: #fafafa; }
+  input, button { padding: 8px; margin: 4px 0; width: 100%; box-sizing: border-box; }
+  .msg { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+  <h2>اختبار اتصال WebSocket بالشات</h2>
+  <p>الصق التوكن اللي رجعلك من /login أو /register، ثم اضغط اتصال:</p>
+  <input id="token" placeholder="التوكن هنا">
+  <button onclick="connect()">اتصال بـ WebSocket</button>
+  <div id="log"></div>
+
+  <script>
+    let ws;
+    function log(text) {
+      const div = document.getElementById('log');
+      const p = document.createElement('div');
+      p.className = 'msg';
+      p.textContent = text;
+      div.appendChild(p);
+      div.scrollTop = div.scrollHeight;
+    }
+
+    function connect() {
+      const token = document.getElementById('token').value.trim();
+      if (!token) { alert('حط التوكن الأول'); return; }
+
+      ws = new WebSocket(`ws://127.0.0.1:8080/ws?token=${encodeURIComponent(token)}`);
+
+      ws.onopen = () => log('✅ الاتصال اتفتح بنجاح');
+      ws.onmessage = (event) => log('📩 رسالة جديدة: ' + event.data);
+      ws.onclose = () => log('❌ الاتصال اتقفل');
+      ws.onerror = (e) => log('⚠️ خطأ في الاتصال');
+    }
+  </script>
+</body>
+</html>

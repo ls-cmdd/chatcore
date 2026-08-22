@@ -1,0 +1,11 @@
+[package]
+name = "chat_backend"
+version = "0.1.0"
+edition = "2021"
+
+# لا يوجد أي dependency خارجي عمدًا:
+# - HTTP parsing: يدوي بالكامل (src/http/)
+# - JSON: encoder/parser يدوي (src/json.rs)
+# - SHA-1 + Base64 (لازمين لـ WebSocket handshake حسب RFC 6455): يدوي بالكامل (src/crypto.rs)
+# - Thread pool: يدوي بالكامل (src/thread_pool.rs)
+[dependencies]
