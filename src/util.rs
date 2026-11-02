@@ -58,3 +58,38 @@ pub fn percent_decode(input: &str) -> String {
     }
     String::from_utf8_lossy(&out).to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn split_path_query_without_query_returns_empty_map() {
+        let (path, query) = split_path_query("/health");
+        assert_eq!(path, "/health");
+        assert!(query.is_empty());
+    }
+
+    #[test]
+    fn split_path_query_decodes_values_and_flags() {
+        let (path, query) =
+            split_path_query("/messages?limit=10&search=hello+world&flag&empty=&encoded=%2F");
+
+        assert_eq!(path, "/messages");
+        assert_eq!(query.get("limit").map(String::as_str), Some("10"));
+        assert_eq!(query.get("search").map(String::as_str), Some("hello world"));
+        assert_eq!(query.get("flag").map(String::as_str), Some(""));
+        assert_eq!(query.get("empty").map(String::as_str), Some(""));
+        assert_eq!(query.get("encoded").map(String::as_str), Some("/"));
+    }
+
+    #[test]
+    fn percent_decode_preserves_malformed_escapes() {
+        assert_eq!(percent_decode("%2G%"), "%2G%");
+    }
+
+    #[test]
+    fn percent_decode_handles_utf8_sequences() {
+        assert_eq!(percent_decode("caf%C3%A9"), "café");
+    }
+}
